@@ -15,16 +15,13 @@ fecha_minima <- as.Date("05/01/2020", "%d/%m/%Y")
 fecha_maxima <- as.Date("24/04/2020", "%d/%m/%Y")
 #colnames(datos)
 #str(datos)
-
 datos_2 <- pivot_longer(datos, cols=4:114, names_to = "Fechas", values_to = "casos")
-
 datos_2$Fechas <- as.Date(datos_2$Fechas,"%d/%m/%Y")
-
 #view(datos_2)
 
 ui <- fluidPage(
   # Application title
-  titlePanel("coronaMEX"),
+  titlePanel("Visualización de casos confirmados de Covid-19 por estado en México"),
   # Sidebar for parameters
   sidebarLayout(
     sidebarPanel(
@@ -51,16 +48,23 @@ ui <- fluidPage(
 server <- function(input, output) {
   output$lifeExpPlot <- renderPlot({
     datos_2 %>%
-      
-      ##AQUI NOS QUEDAMOS
       filter( nombre %in% input$nombre ) %>%
-      ggplot( aes( x= input$ylms ,y = datos_2$casos, col=get(input$colorBy), group=nombre )) +
+      ggplot( aes( x= Fechas ,y = casos, group = nombre, color = nombre)) +
       geom_point( size=0.3 ) +
       geom_line( ) +
-      coord_cartesian(xlim=c(input$ylms[1], input$ylms[2])) +
-      labs(col=input$colorBy)
+      coord_cartesian(xlim=c(input$ylms[1], input$ylms[2]))
   })
-}
+    
+  output$plotLegend <- renderText({
+    sprintf("Datos de esperanza de vida del año %d al año %d. Cada color
+    representa un %s. Los siguientes países estan representados en el gráfico: %s.",
+            input$ylms[1], input$ylms[2],
+            ifelse(input$colorBy == "continent", "continente", "país"),
+            paste(input$countries, collapse=", "))
+  })
+  
+  }#server
 
 # Run the application 
 shinyApp(ui = ui, server = server)
+##grafica
