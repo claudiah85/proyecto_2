@@ -16,7 +16,6 @@ fecha_maxima <- as.Date("24/04/2020", "%d/%m/%Y")
 #colnames(datos)
 #str(datos)
 
-
 datos_2 <- pivot_longer(datos, cols=4:114, names_to = "Fechas", values_to = "casos")
 
 datos_2$Fechas <- as.Date(datos_2$Fechas,"%d/%m/%Y")
@@ -29,6 +28,7 @@ ui <- fluidPage(
   # Sidebar for parameters
   sidebarLayout(
     sidebarPanel(
+      
       ## Código para seleccionar paises
       selectizeInput( 'nombre', label = h3("Seleccionar estados"), 
                       choices = levels(as.factor(datos$nombre)), multiple=TRUE),##
@@ -51,8 +51,10 @@ ui <- fluidPage(
 server <- function(input, output) {
   output$lifeExpPlot <- renderPlot({
     datos_2 %>%
+      
+      ##AQUI NOS QUEDAMOS
       filter( nombre %in% input$nombre ) %>%
-      ggplot( aes( x= input$ylms ,y = input$casos, col=get(input$colorBy), group=nombre )) +
+      ggplot( aes( x= input$ylms ,y = datos_2$casos, col=get(input$colorBy), group=nombre )) +
       geom_point( size=0.3 ) +
       geom_line( ) +
       coord_cartesian(xlim=c(input$ylms[1], input$ylms[2])) +
