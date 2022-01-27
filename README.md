@@ -1,1 +1,1 @@
-# proyecto_2
+coronaMEX es una pagina web que reacciona.
